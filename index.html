@@ -1,0 +1,591 @@
+},
+                    fontFamily: {
+                        sans: ['Zen Maru Gothic', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ズボラ日記 - あとから思い出したことをサクッとメモ</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome (Icons) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                        }
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background-color: #f8fafc;
+        }
+        /* Calendar Styling */
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+        }
+        .calendar-day {
+            min-height: 52px;
+            transition: all 0.2s ease;
+        }
+        .calendar-day:hover {
+            background-color: #f1f5f9;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="text-slate-800 min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+        <div class="max-w-5xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <div class="w-9 h-9 rounded-xl bg-brand-500 text-white flex items-center justify-center font-bold text-lg shadow-md">
+                    <i class="fa-solid fa-note-sticky"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight text-slate-800">ズボラ日記メモ</h1>
+                    <p class="text-xs text-slate-400">思い出したときに、あとからちょい足し</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-2">
+                <button id="todayBtn" class="px-3 py-1.5 text-xs sm:text-sm font-medium bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors flex items-center gap-1">
+                    <i class="fa-solid fa-calendar-day"></i>
+                    <span>今日へ</span>
+                </button>
+                <button id="exportImportBtn" class="p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors" title="データ管理">
+                    <i class="fa-solid fa-gear text-base"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-5xl w-full mx-auto p-4 md:py-6 grid grid-cols-1 md:grid-cols-12 gap-6">
+        
+        <!-- Left Column: Calendar & Today Stats -->
+        <section class="md:col-span-5 space-y-4">
+            <!-- Calendar Card -->
+            <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-slate-200/80">
+                <!-- Calendar Header -->
+                <div class="flex items-center justify-between mb-4">
+                    <h2 id="calendarMonthYear" class="font-bold text-lg text-slate-800">2026年 9月</h2>
+                    <div class="flex items-center space-x-1">
+                        <button id="prevMonthBtn" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 text-slate-600 transition-colors">
+                            <i class="fa-solid fa-chevron-left text-xs"></i>
+                        </button>
+                        <button id="nextMonthBtn" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 text-slate-600 transition-colors">
+                            <i class="fa-solid fa-chevron-right text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Weekday Headers -->
+                <div class="calendar-grid text-center font-bold text-xs text-slate-400 mb-2">
+                    <div class="text-rose-500">日</div>
+                    <div>月</div>
+                    <div>火</div>
+                    <div>水</div>
+                    <div>木</div>
+                    <div>金</div>
+                    <div class="text-sky-500">土</div>
+                </div>
+
+                <!-- Calendar Days Grid -->
+                <div id="calendarDays" class="calendar-grid gap-1">
+                    <!-- Dynamic rendering via JS -->
+                </div>
+            </div>
+
+            <!-- Quick Tips / Motivational Banner -->
+            <div class="bg-gradient-to-br from-brand-50 to-emerald-50 rounded-2xl p-4 border border-brand-100 text-slate-600 text-xs sm:text-sm leading-relaxed flex gap-3">
+                <div class="text-brand-500 text-xl flex-shrink-0 mt-0.5">
+                    <i class="fa-regular fa-lightbulb"></i>
+                </div>
+                <div>
+                    <span class="font-bold text-brand-700 block mb-0.5">ズボラ日記のコツ</span>
+                    一行でもOK！「昼にうどん食べた」「スマホ落とした」など、思い出した瞬間に何回でもメモを追加できます。
+                </div>
+            </div>
+        </section>
+
+        <!-- Right Column: Note View & Entry for Selected Date -->
+        <section class="md:col-span-7 flex flex-col space-y-4">
+            
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 flex-1 flex flex-col">
+                <!-- Selected Date Header -->
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+                    <div>
+                        <span id="selectedDayOfWeek" class="text-xs font-bold px-2 py-0.5 rounded bg-brand-100 text-brand-700">今日</span>
+                        <h2 id="selectedDateTitle" class="text-xl font-bold text-slate-800 mt-1">2026年9月29日 (火)</h2>
+                    </div>
+                    <div class="text-right">
+                        <span id="memoCountBadge" class="text-xs text-slate-400 font-medium">メモ 0件</span>
+                    </div>
+                </div>
+
+                <!-- Quick Append Input Box -->
+                <form id="appendMemoForm" class="mb-5">
+                    <label for="memoInput" class="block text-xs font-bold text-slate-500 mb-1.5">
+                        <i class="fa-solid fa-plus-circle text-brand-500 mr-1"></i>思い出したことを追記する
+                    </label>
+                    <div class="flex gap-2">
+                        <input type="text" id="memoInput" placeholder="例: 夜10時にアイス食べた、散歩中に猫みた" 
+                            class="flex-1 px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100 text-sm transition-all" required>
+                        <button type="submit" class="bg-brand-500 hover:bg-brand-600 text-white font-bold px-4 py-2.5 rounded-xl transition-all shadow-sm hover:shadow text-sm flex items-center gap-1.5 flex-shrink-0">
+                            <i class="fa-solid fa-paper-plane"></i>
+                            <span>追記</span>
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Time-line / Memo List -->
+                <div class="flex-1 flex flex-col">
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">本日のタイムライン</h3>
+                    
+                    <div id="memoList" class="flex-1 space-y-2 overflow-y-auto max-h-[360px] pr-1 mb-4">
+                        <!-- Dynamic items will be added here -->
+                    </div>
+
+                    <!-- Summary / Free-text Diary Area -->
+                    <div class="border-t border-slate-100 pt-3 mt-auto">
+                        <button id="toggleSummaryBtn" class="text-xs font-bold text-slate-500 hover:text-brand-600 flex items-center gap-1 mb-2">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                            <span>一日のつぶやき・一言感想を残す</span>
+                            <i id="summaryChevron" class="fa-solid fa-chevron-down text-[10px] ml-1 transition-transform"></i>
+                        </button>
+                        <div id="summaryContainer" class="hidden">
+                            <textarea id="summaryTextarea" rows="2" placeholder="今日一日のざっくりとした感想やまとめ..."
+                                class="w-full p-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-brand-500 text-sm mb-2 transition-all"></textarea>
+                            <div class="flex justify-end">
+                                <button id="saveSummaryBtn" class="bg-slate-700 hover:bg-slate-800 text-white text-xs px-3 py-1.5 rounded-lg font-medium transition-colors">
+                                    保存する
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <!-- Modal: Data Backup & Restore -->
+    <div id="dataModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-100">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-lg text-slate-800">データ管理・バックアップ</h3>
+                <button id="closeModalBtn" class="text-slate-400 hover:text-slate-600 p-1">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <p class="text-xs text-slate-500 mb-4 leading-relaxed">
+                データはすべてお使いのブラウザ内（LocalStorage）に保存されています。別端末への引っ越しやバックアップはここから行えます。
+            </p>
+            
+            <div class="space-y-3">
+                <button id="exportBtn" class="w-full border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold py-2.5 px-4 rounded-xl text-sm transition-colors flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-download text-brand-500"></i>
+                    <span>日記データをダウンロード (JSON)</span>
+                </button>
+                
+                <div class="relative">
+                    <input type="file" id="importInput" accept=".json" class="hidden">
+                    <button id="importBtn" class="w-full border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold py-2.5 px-4 rounded-xl text-sm transition-colors flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-upload text-sky-500"></i>
+                        <span>データを復元・読み込み</span>
+                    </button>
+                </div>
+
+                <div class="pt-2 border-t border-slate-100">
+                    <button id="clearAllBtn" class="w-full hover:bg-rose-50 text-rose-600 font-medium py-2 px-4 rounded-xl text-xs transition-colors text-center">
+                        全データを削除する（初期化）
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- State Management ---
+        const STORAGE_KEY = 'zubora_diary_data_v1';
+        
+        // Application Data Structure:
+        // {
+        //   "YYYY-MM-DD": {
+        //      memos: [ { id, text, time } ],
+        //      summary: "free text"
+        //   }
+        // }
+        let diaryData = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+
+        let currentDate = new Date(); // Currently navigated calendar month
+        let selectedDateStr = formatDateKey(new Date()); // Format YYYY-MM-DD
+
+        // --- DOM Elements ---
+        const calendarMonthYear = document.getElementById('calendarMonthYear');
+        const calendarDays = document.getElementById('calendarDays');
+        const prevMonthBtn = document.getElementById('prevMonthBtn');
+        const nextMonthBtn = document.getElementById('nextMonthBtn');
+        const todayBtn = document.getElementById('todayBtn');
+
+        const selectedDateTitle = document.getElementById('selectedDateTitle');
+        const selectedDayOfWeek = document.getElementById('selectedDayOfWeek');
+        const memoCountBadge = document.getElementById('memoCountBadge');
+        
+        const appendMemoForm = document.getElementById('appendMemoForm');
+        const memoInput = document.getElementById('memoInput');
+        const memoList = document.getElementById('memoList');
+
+        const toggleSummaryBtn = document.getElementById('toggleSummaryBtn');
+        const summaryContainer = document.getElementById('summaryContainer');
+        const summaryTextarea = document.getElementById('summaryTextarea');
+        const saveSummaryBtn = document.getElementById('saveSummaryBtn');
+        const summaryChevron = document.getElementById('summaryChevron');
+
+        const exportImportBtn = document.getElementById('exportImportBtn');
+        const dataModal = document.getElementById('dataModal');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const exportBtn = document.getElementById('exportBtn');
+        const importBtn = document.getElementById('importBtn');
+        const importInput = document.getElementById('importInput');
+        const clearAllBtn = document.getElementById('clearAllBtn');
+
+        // --- Date Helpers ---
+        function formatDateKey(dateObj) {
+            const y = dateObj.getFullYear();
+            const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const d = String(dateObj.getDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
+        }
+
+        function getJapaneseDateString(dateStr) {
+            const [y, m, d] = dateStr.split('-').map(Number);
+            const date = new Date(y, m - 1, d);
+            const days = ['日', '月', '火', '水', '木', '金', '土'];
+            return `${y}年${m}月${d}日 (${days[date.getDay()]})`;
+        }
+
+        function isToday(dateStr) {
+            return dateStr === formatDateKey(new Date());
+        }
+
+        function saveToStorage() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(diaryData));
+        }
+
+        // --- Calendar Logic ---
+        function renderCalendar() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+
+            calendarMonthYear.textContent = `${year}年 ${month + 1}月`;
+
+            calendarDays.innerHTML = '';
+
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            // Empty cells for previous month padding
+            for (let i = 0; i < firstDay; i++) {
+                const emptyCell = document.createElement('div');
+                emptyCell.className = 'calendar-day rounded-xl';
+                calendarDays.appendChild(emptyCell);
+            }
+
+            // Days cells
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayDateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const dayCell = document.createElement('div');
+                
+                const isSelected = dayDateKey === selectedDateStr;
+                const isCurrentToday = dayDateKey === formatDateKey(new Date());
+                const dayData = diaryData[dayDateKey];
+                const hasData = dayData && ((dayData.memos && dayData.memos.length > 0) || (dayData.summary && dayData.summary.trim() !== ''));
+
+                let baseClasses = 'calendar-day rounded-xl p-1 flex flex-col items-center justify-between cursor-pointer border transition-all text-xs font-bold relative ';
+                
+                if (isSelected) {
+                    baseClasses += 'bg-brand-500 text-white border-brand-600 shadow-sm ';
+                } else if (isCurrentToday) {
+                    baseClasses += 'bg-brand-50 text-brand-700 border-brand-200 ';
+                } else {
+                    baseClasses += 'bg-white text-slate-700 border-transparent hover:border-slate-200 ';
+                }
+
+                dayCell.className = baseClasses;
+
+                // Day number container
+                const numSpan = document.createElement('span');
+                numSpan.textContent = day;
+                dayCell.appendChild(numSpan);
+
+                // Indicator dot for entries
+                if (hasData) {
+                    const dot = document.createElement('span');
+                    dot.className = `w-1.5 h-1.5 rounded-full mt-1 ${isSelected ? 'bg-white' : 'bg-brand-500'}`;
+                    dayCell.appendChild(dot);
+                } else {
+                    const spacer = document.createElement('span');
+                    spacer.className = 'w-1.5 h-1.5 mt-1 opacity-0';
+                    dayCell.appendChild(spacer);
+                }
+
+                dayCell.addEventListener('click', () => {
+                    selectedDateStr = dayDateKey;
+                    renderCalendar();
+                    renderDayDetail();
+                });
+
+                calendarDays.appendChild(dayCell);
+            }
+        }
+
+        // --- Day Detail Render ---
+        function renderDayDetail() {
+            selectedDateTitle.textContent = getJapaneseDateString(selectedDateStr);
+            
+            // Badge tag
+            if (isToday(selectedDateStr)) {
+                selectedDayOfWeek.textContent = '今日';
+                selectedDayOfWeek.className = 'text-xs font-bold px-2 py-0.5 rounded bg-brand-100 text-brand-700';
+            } else {
+                const dateObj = new Date(selectedDateStr);
+                const days = ['日曜日', '月曜日', '火曜日', '水曜日', '木曜日', '金曜日', '土曜日'];
+                selectedDayOfWeek.textContent = days[dateObj.getDay()];
+                selectedDayOfWeek.className = 'text-xs font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600';
+            }
+
+            const dayEntry = diaryData[selectedDateStr] || { memos: [], summary: '' };
+            const memos = dayEntry.memos || [];
+
+            memoCountBadge.textContent = `メモ ${memos.length}件`;
+
+            // Clear memo list
+            memoList.innerHTML = '';
+
+            if (memos.length === 0) {
+                memoList.innerHTML = `
+                    <div class="h-40 flex flex-col items-center justify-center text-slate-300 space-y-2">
+                        <i class="fa-regular fa-comment-dots text-3xl"></i>
+                        <p class="text-xs">この日のメモはまだありません</p>
+                    </div>
+                `;
+            } else {
+                memos.forEach((memo, index) => {
+                    const memoItem = document.createElement('div');
+                    memoItem.className = 'group flex items-start justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-100 transition-all gap-2';
+
+                    memoItem.innerHTML = `
+                        <div class="flex-1 min-w-0 pr-2">
+                            <p class="text-sm text-slate-800 break-words whitespace-pre-wrap leading-relaxed">${escapeHtml(memo.text)}</p>
+                            <span class="text-[10px] text-slate-400 mt-1 block">${memo.time || ''}</span>
+                        </div>
+                        <div class="opacity-0 group-hover:opacity-100 sm:opacity-100 transition-opacity flex items-center space-x-1 flex-shrink-0">
+                            <button onclick="editMemo(${index})" class="p-1.5 text-slate-400 hover:text-brand-600 rounded-lg transition-colors text-xs" title="編集">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+                            <button onclick="deleteMemo(${index})" class="p-1.5 text-slate-400 hover:text-rose-500 rounded-lg transition-colors text-xs" title="削除">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    `;
+                    memoList.appendChild(memoItem);
+                });
+            }
+
+            // Summary text
+            summaryTextarea.value = dayEntry.summary || '';
+            if (dayEntry.summary && dayEntry.summary.trim() !== '') {
+                summaryContainer.classList.remove('hidden');
+                summaryChevron.classList.add('rotate-180');
+            } else {
+                summaryContainer.classList.add('hidden');
+                summaryChevron.classList.remove('rotate-180');
+            }
+        }
+
+        function escapeHtml(str) {
+            return str
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        // --- Memo Actions ---
+        appendMemoForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const text = memoInput.value.trim();
+            if (!text) return;
+
+            const now = new Date();
+            const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+            if (!diaryData[selectedDateStr]) {
+                diaryData[selectedDateStr] = { memos: [], summary: '' };
+            }
+
+            diaryData[selectedDateStr].memos.push({
+                id: Date.now(),
+                text: text,
+                time: timeStr
+            });
+
+            saveToStorage();
+            memoInput.value = '';
+            renderDayDetail();
+            renderCalendar();
+        });
+
+        window.deleteMemo = function(index) {
+            if (!diaryData[selectedDateStr]) return;
+            diaryData[selectedDateStr].memos.splice(index, 1);
+            saveToStorage();
+            renderDayDetail();
+            renderCalendar();
+        };
+
+        window.editMemo = function(index) {
+            if (!diaryData[selectedDateStr]) return;
+            const currentMemo = diaryData[selectedDateStr].memos[index];
+            const newText = prompt('メモを編集:', currentMemo.text);
+            if (newText !== null && newText.trim() !== '') {
+                diaryData[selectedDateStr].memos[index].text = newText.trim();
+                saveToStorage();
+                renderDayDetail();
+            }
+        };
+
+        // Summary toggle & save
+        toggleSummaryBtn.addEventListener('click', () => {
+            summaryContainer.classList.toggle('hidden');
+            summaryChevron.classList.toggle('rotate-180');
+        });
+
+        saveSummaryBtn.addEventListener('click', () => {
+            if (!diaryData[selectedDateStr]) {
+                diaryData[selectedDateStr] = { memos: [], summary: '' };
+            }
+            diaryData[selectedDateStr].summary = summaryTextarea.value;
+            saveToStorage();
+            renderCalendar();
+            
+            // Temporary feedback
+            const originalText = saveSummaryBtn.textContent;
+            saveSummaryBtn.textContent = '保存完了！';
+            saveSummaryBtn.classList.replace('bg-slate-700', 'bg-brand-600');
+            setTimeout(() => {
+                saveSummaryBtn.textContent = originalText;
+                saveSummaryBtn.classList.replace('bg-brand-600', 'bg-slate-700');
+            }, 1500);
+        });
+
+        // --- Navigation Buttons ---
+        prevMonthBtn.addEventListener('click', () => {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            renderCalendar();
+        });
+
+        nextMonthBtn.addEventListener('click', () => {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            renderCalendar();
+        });
+
+        todayBtn.addEventListener('click', () => {
+            currentDate = new Date();
+            selectedDateStr = formatDateKey(new Date());
+            renderCalendar();
+            renderDayDetail();
+        });
+
+        // --- Data Modal Logic ---
+        exportImportBtn.addEventListener('click', () => dataModal.classList.remove('hidden'));
+        closeModalBtn.addEventListener('click', () => dataModal.classList.add('hidden'));
+
+        // Export JSON
+        exportBtn.addEventListener('click', () => {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(diaryData, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `zubora_diary_backup_${formatDateKey(new Date())}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        });
+
+        // Import JSON
+        importBtn.addEventListener('click', () => importInput.click());
+        importInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                try {
+                    const imported = JSON.parse(evt.target.result);
+                    if (typeof imported === 'object' && imported !== null) {
+                        diaryData = imported;
+                        saveToStorage();
+                        renderCalendar();
+                        renderDayDetail();
+                        alert('データを正常に読み込みました！');
+                        dataModal.classList.add('hidden');
+                    } else {
+                        alert('無効なファイル形式です。');
+                    }
+                } catch (err) {
+                    alert('ファイルの解析に失敗しました。');
+                }
+            };
+            reader.readAsText(file);
+        });
+
+        // Clear All
+        clearAllBtn.addEventListener('click', () => {
+            if (confirm('本当にすべてのデータを削除しますか？この操作は取り消せません。')) {
+                diaryData = {};
+                saveToStorage();
+                renderCalendar();
+                renderDayDetail();
+                dataModal.classList.add('hidden');
+            }
+        });
+
+        // --- App Init ---
+        window.onload = function() {
+            renderCalendar();
+            renderDayDetail();
+        };
+    </script>
+</body>
+</html>
